@@ -64,7 +64,8 @@ def mutation_array(seq1, seq2):
 # Read downloaded sequence file from NCBI GenBank Virus site
 # records = list( SeqIO.parse("./data/MA-sequences.fasta", "fasta") )
 # records = list( SeqIO.parse("./data/MA-sequences-1-toy.fasta", "fasta") )
-records = list( SeqIO.parse("./data/MA-sequences-1-toy1.fasta", "fasta") )
+# records = list( SeqIO.parse("./data/MA-sequences-1-toy1.fasta", "fasta") )
+records = list( SeqIO.parse("./data/MA-sequences-2.fasta", "fasta") )
 # records = list( SeqIO.parse("./data/MA-sequences-1.fasta", "fasta") )
 
 metadata = []
@@ -135,7 +136,8 @@ for idx, idlist in enumerate(ids):
 # Save to file
 import pandas as pd
 
-outfile = './data/MA-sequences-1-toy1.csv'
+# outfile = './data/MA-sequences-1-toy1.csv'
+outfile = './data/MA-sequences-2.csv'
 data = {
     'dates': dates,
     'idlist': idlist,
