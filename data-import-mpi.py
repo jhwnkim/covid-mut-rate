@@ -57,16 +57,16 @@ def main():
 
 
     # Read downloaded sequence file from NCBI GenBank Virus site
-    
-    if len(sys.argv) > 2: 
+    print(sys.argv)
+    if len(sys.argv) > 1:
         infile = sys.argv[1]
     else:
         infile = "./data/MA-sequences-2-toy.fasta"
     records = list( SeqIO.parse(infile, "fasta") )
-    
+
     metadata = []
     mutarray = []
-    
+
     import time
     start = time.time()
     for idx, record in enumerate(records):
@@ -79,17 +79,17 @@ def main():
         else:
             metadata.append(meta)
             mutarray.append(mut)
-    
+
     dates = []
     mutarray_avg = []
     ids = []
-    
+
     for idx, rec in enumerate(metadata):
         if len(mutarray_avg) ==0 or rec['collect-date'] > dates[-1]:
             dates.append(rec['collect-date'])
             ids.append([rec['id']])
             mutarray_avg.append(mutarray[idx])
-    
+
         else:
             for i in range(len(mutarray_avg)):
                 if rec['collect-date']< dates[i]:
@@ -101,16 +101,16 @@ def main():
                     ids[i].append(rec['id'])
                     mutarray_avg[i] += mutarray[idx]
                     break
-    
+
     # Divide mutation rate by counts and convert to float Array
     mutvec_out = []
     for idx, idlist in enumerate(ids):
         mutarray_avg[idx] = mutarray_avg[idx]/len(idlist)
-    
+
         print(dates[idx])
         print(idlist)
         print(mutarray_avg[idx])
-    
+
         mutvec =  [ \
     		mutarray_avg[idx]["A", "C"], \
     		mutarray_avg[idx]["A", "T"], \
@@ -125,15 +125,15 @@ def main():
     		mutarray_avg[idx]["G", "C"], \
     		mutarray_avg[idx]["G", "T"]]
         mutvec_out.append([float(x) for x in mutvec])
-    
+
     # print('{:e}'.format(mutarray_avg[0]['C', 'T']))
     # Save to file
     import pandas as pd
-    
+
     # outfile = './data/MA-sequences-1-toy1.csv'
     # outfile = './data/MA-sequences-2-toy.csv'
     outfile = infile[:-5] + '.csv'
-    
+
     df = pd.DataFrame({"Dates": dates})
     df = pd.concat( [df, \
     	pd.DataFrame(mutvec_out, columns=['A->C', 'A->T', 'A->G', \
@@ -144,24 +144,24 @@ def main():
     	pd.DataFrame({"N": [len(idlist) for idlist in ids]})], axis=1)
     print(df)
     df.to_csv(outfile, index=False)
-    
+
     print('Run time took {}'.format(time.strftime("%H:%M:%S", time.gmtime(time.time()-start))))
-    
+
     '''
     To read data
     # load file with pandas
-    
+
     import pandas as pd
-    
+
     outfile = './data/MA-sequences-1-toy1.csv'
-    
+
     df = pd.read_csv(outfile)
-    
+
     # convert to list and numpy array
     dates = df['Dates'].values.tolist() # in strings
     mutrates = df.iloc[:,1:13].to_numpy()
-    
-    
+
+
     print(df)
     '''
 
