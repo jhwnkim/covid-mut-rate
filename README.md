@@ -59,3 +59,8 @@ Fasta definition line: Accession, Genbank Title, Geo Location, Collection Date
 
 * ./data/MA-sequences-11.fasta: Fasta list of following search
 5. Collection Date: 1/1/2021-1/14/2021
+
+# Command to run multiple process on supercloud
+```bash
+LLMapReduce --mapper mapper.sh --input ./data/batch_input --output ./data/output --apptype=mimo --np=[2,8,1]
+```

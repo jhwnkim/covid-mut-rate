@@ -10,4 +10,3 @@ module load anaconda/2020a
 # Note that $1 and $2 are the arguments passed into this script
 #python top5overall_map.py $1 $2
 python data-import-map.py $1 $2
-# LLMapReduce --mapper mapper.sh --input ./data/batch_input/ --output ./data/output --apptype=mimo --np=[1,4,1]
