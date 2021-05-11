@@ -47,3 +47,23 @@ Fasta definition line: Accession, Genbank Title, Geo Location, Collection Date
 * ./data/MA-sequences-4.fasta: Fasta list of following search
 5. Collection Date: Mar 21, 2021 - Mar 31,2021
 
+* ./data/MA-sequences-5.fasta: Fasta list of following search
+5. Collection Date: 3/10/2021-3/20/2021
+
+* ./data/MA-sequences-6.fasta: Fasta list of following search
+5. Collection Date: 3/1/2021-3/9/2021
+
+* ./data/MA-sequences-7.fasta: Fasta list of following search
+5. Collection Date: 2/20/2021-2/28/2021
+
+* ./data/MA-sequences-8.fasta: Fasta list of following search
+5. Collection Date: 2/10/2021-2/19/2021
+
+* ./data/MA-sequences-9.fasta: Fasta list of following search
+5. Collection Date: 2/1/2021-2/9/2021
+
+* ./data/MA-sequences-10.fasta: Fasta list of following search
+5. Collection Date: 1/15/2021-1/31/2021
+
+* ./data/MA-sequences-11.fasta: Fasta list of following search
+5. Collection Date: 1/1/2021-1/14/2021
