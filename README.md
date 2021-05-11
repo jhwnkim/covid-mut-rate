@@ -20,9 +20,11 @@ $ conda install -c conda-forge biopython
 
 3. Nucleotide completeness: completeness
 
-4. Geobraphic region: USA: MA
+4. Geographic region: USA: MA
 
 5. Collection Date: Apr 26,2021 - May 10,2021
+
+Fasta definition line: Accession, Genbank Title
 
 
 * ./data/MA-sequences-2.fasta: Fasta list of following search
@@ -33,6 +35,8 @@ $ conda install -c conda-forge biopython
 
 3. Nucleotide completeness: completeness
 
-4. Geobraphic region: USA: MA
+4. Geographic region: USA: MA
 
 5. Collection Date: Apr 10,2021 - May 10,2021
+
+Fasta definition line: Accession, Genbank Title, Geo Location, Collection Date

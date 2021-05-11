@@ -1,6 +1,4 @@
 from Bio import SeqIO
-from Bio import Entrez
-Entrez.email = "jhwnkim@mit.edu"  # Always tell NCBI who you are
 
 import traceback
 
@@ -11,22 +9,16 @@ print(ref.id)
 print(repr(ref.seq))
 print(len(ref.seq))
 
+def get_meta_fasta(record):
+    import re
 
-def get_meta(record_id='NC_045512.2'): # default is the reference
-    handle = Entrez.efetch(db="nuccore", id=record_id, rettype="gb", retmode="xml")
-    fetch_record = Entrez.read(handle)
-    handle.close()
+    tokens = re.split(r'\|', record.description)
 
     metadata = {
-        'id': record_id,
-        'submit-date': fetch_record[0]['GBSeq_create-date'],
+        'id': record.id,
+        'collect-date': tokens[-1],
+        'country': tokens[-2]
     }
-
-    for qualifier in fetch_record[0]['GBSeq_feature-table'][0]['GBFeature_quals']:
-        if qualifier['GBQualifier_name'] == 'country':
-            metadata['country'] = qualifier['GBQualifier_value']
-        if qualifier['GBQualifier_name'] == 'collection_date':
-            metadata['collect-date'] = qualifier['GBQualifier_value']
 
     print(metadata)
     return metadata
@@ -62,11 +54,9 @@ def mutation_array(seq1, seq2):
 
 
 # Read downloaded sequence file from NCBI GenBank Virus site
-# records = list( SeqIO.parse("./data/MA-sequences.fasta", "fasta") )
-# records = list( SeqIO.parse("./data/MA-sequences-1-toy.fasta", "fasta") )
-# records = list( SeqIO.parse("./data/MA-sequences-1-toy1.fasta", "fasta") )
-records = list( SeqIO.parse("./data/MA-sequences-2.fasta", "fasta") )
-# records = list( SeqIO.parse("./data/MA-sequences-1.fasta", "fasta") )
+
+infile = "./data/MA-sequences-2-toy.fasta"
+records = list( SeqIO.parse(infile, "fasta") )
 
 metadata = []
 mutarray = []
@@ -76,7 +66,7 @@ start = time.time()
 for idx, record in enumerate(records):
     print('\n{} of {} records'.format(idx+1, len(records)))
     try:
-        meta = get_meta(record.id)
+        meta = get_meta_fasta(record)
         mut = mutation_array(ref.seq, record.seq)
     except:
         print(traceback.format_exc())
@@ -137,7 +127,8 @@ for idx, idlist in enumerate(ids):
 import pandas as pd
 
 # outfile = './data/MA-sequences-1-toy1.csv'
-outfile = './data/MA-sequences-2.csv'
+# outfile = './data/MA-sequences-2-toy.csv'
+outfile = infile[:-5] + '.csv'
 
 df = pd.DataFrame({"Dates": dates})
 df = pd.concat( [df, \
