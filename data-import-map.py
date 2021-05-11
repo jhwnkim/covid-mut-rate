@@ -45,136 +45,130 @@ def mutation_array(seq1, seq2):
     return mut_rate
 
 
-def main():
-
-    # Read Covid19 reference sequence
-    ref = SeqIO.read("./data/ref_sequence.gb", "genbank")
-    print('Reference Covid sequence')
-    print(ref.id)
-    print(repr(ref.seq))
-    print(len(ref.seq))
+# Read Covid19 reference sequence
+ref = SeqIO.read("./data/ref_sequence.gb", "genbank")
+print('Reference Covid sequence')
+print(ref.id)
+print(repr(ref.seq))
+print(len(ref.seq))
 
 
-    # Read downloaded sequence file from NCBI GenBank Virus site
-    sys.path.append('../')
-    from word_count_helpers import *
+# Read downloaded sequence file from NCBI GenBank Virus site
+sys.path.append('../')
+
+inOutFileList = open(sys.argv[1],"r+")
+
+for line in inOutFileList.readlines():
+
+    # Get input and output file names for this iteration
+    (inFile,outFile) = line.split()
+    print("Reading from " + inFile + " and writing to " + outFile)
+
+
+    infile = inFile
+    #if len(sys.argv) > 2: 
+    #    infile = sys.argv[1]
+    #else:
+    #    infile = "./data/MA-sequences-2-toy.fasta"
+    records = list( SeqIO.parse(infile, "fasta") )
     
-    inOutFileList = open(sys.argv[1],"r+")
+    metadata = []
+    mutarray = []
     
-    for line in inOutFileList.readlines():
+    import time
+    start = time.time()
+    for idx, record in enumerate(records):
+        print('\n{} of {} records'.format(idx+1, len(records)))
+        try:
+            meta = get_meta_fasta(record)
+            mut = mutation_array(ref.seq, record.seq)
+        except:
+            print(traceback.format_exc())
+        else:
+            metadata.append(meta)
+            mutarray.append(mut)
     
-        # Get input and output file names for this iteration
-        (inFile,outFile) = line.split()
-        print("Reading from " + inFile + " and writing to " + outFile)
+    dates = []
+    mutarray_avg = []
+    ids = []
     
+    for idx, rec in enumerate(metadata):
+        if len(mutarray_avg) ==0 or rec['collect-date'] > dates[-1]:
+            dates.append(rec['collect-date'])
+            ids.append([rec['id']])
+            mutarray_avg.append(mutarray[idx])
     
-        infile = inFile
-        #if len(sys.argv) > 2: 
-        #    infile = sys.argv[1]
-        #else:
-        #    infile = "./data/MA-sequences-2-toy.fasta"
-        records = list( SeqIO.parse(infile, "fasta") )
-        
-        metadata = []
-        mutarray = []
-        
-        import time
-        start = time.time()
-        for idx, record in enumerate(records):
-            print('\n{} of {} records'.format(idx+1, len(records)))
-            try:
-                meta = get_meta_fasta(record)
-                mut = mutation_array(ref.seq, record.seq)
-            except:
-                print(traceback.format_exc())
-            else:
-                metadata.append(meta)
-                mutarray.append(mut)
-        
-        dates = []
-        mutarray_avg = []
-        ids = []
-        
-        for idx, rec in enumerate(metadata):
-            if len(mutarray_avg) ==0 or rec['collect-date'] > dates[-1]:
-                dates.append(rec['collect-date'])
-                ids.append([rec['id']])
-                mutarray_avg.append(mutarray[idx])
-        
-            else:
-                for i in range(len(mutarray_avg)):
-                    if rec['collect-date']< dates[i]:
-                        dates.insert(i, rec['collect-date'])
-                        ids.insert(i,[rec['id']])
-                        mutarray_avg.insert(i, mutarray[idx])
-                        break
-                    elif rec['collect-date'] == dates[i]:
-                        ids[i].append(rec['id'])
-                        mutarray_avg[i] += mutarray[idx]
-                        break
-        
-        # Divide mutation rate by counts and convert to float Array
-        mutvec_out = []
-        for idx, idlist in enumerate(ids):
-            mutarray_avg[idx] = mutarray_avg[idx]/len(idlist)
-        
-            print(dates[idx])
-            print(idlist)
-            print(mutarray_avg[idx])
-        
-            mutvec =  [ \
-        		mutarray_avg[idx]["A", "C"], \
-        		mutarray_avg[idx]["A", "T"], \
-        		mutarray_avg[idx]["A", "G"], \
-        		mutarray_avg[idx]["C", "A"], \
-        		mutarray_avg[idx]["C", "T"], \
-        		mutarray_avg[idx]["C", "G"], \
-        		mutarray_avg[idx]["T", "A"], \
-        		mutarray_avg[idx]["T", "C"], \
-        		mutarray_avg[idx]["T", "G"], \
-        		mutarray_avg[idx]["G", "A"], \
-        		mutarray_avg[idx]["G", "C"], \
-        		mutarray_avg[idx]["G", "T"]]
-            mutvec_out.append([float(x) for x in mutvec])
-        
-        # print('{:e}'.format(mutarray_avg[0]['C', 'T']))
-        # Save to file
-        import pandas as pd
-        
-        # outfile = './data/MA-sequences-1-toy1.csv'
-        # outfile = './data/MA-sequences-2-toy.csv'
-        outfile = infile[:-5] + '.csv'
-        
-        df = pd.DataFrame({"Dates": dates})
-        df = pd.concat( [df, \
-        	pd.DataFrame(mutvec_out, columns=['A->C', 'A->T', 'A->G', \
-        									'C->A', 'C->T', 'C->G', \
-        									'T->A', 'T->C', 'T->G', \
-        									'G->A', 'G->C', 'G->T'])], axis=1)
-        df = pd.concat( [df, \
-        	pd.DataFrame({"N": [len(idlist) for idlist in ids]})], axis=1)
-        print(df)
-        df.to_csv(outfile, index=False)
-        
-        print('Run time took {}'.format(time.strftime("%H:%M:%S", time.gmtime(time.time()-start))))
+        else:
+            for i in range(len(mutarray_avg)):
+                if rec['collect-date']< dates[i]:
+                    dates.insert(i, rec['collect-date'])
+                    ids.insert(i,[rec['id']])
+                    mutarray_avg.insert(i, mutarray[idx])
+                    break
+                elif rec['collect-date'] == dates[i]:
+                    ids[i].append(rec['id'])
+                    mutarray_avg[i] += mutarray[idx]
+                    break
     
-    '''
-    To read data
-    # load file with pandas
+    # Divide mutation rate by counts and convert to float Array
+    mutvec_out = []
+    for idx, idlist in enumerate(ids):
+        mutarray_avg[idx] = mutarray_avg[idx]/len(idlist)
     
+        print(dates[idx])
+        print(idlist)
+        print(mutarray_avg[idx])
+    
+        mutvec =  [ \
+    		mutarray_avg[idx]["A", "C"], \
+    		mutarray_avg[idx]["A", "T"], \
+    		mutarray_avg[idx]["A", "G"], \
+    		mutarray_avg[idx]["C", "A"], \
+    		mutarray_avg[idx]["C", "T"], \
+    		mutarray_avg[idx]["C", "G"], \
+    		mutarray_avg[idx]["T", "A"], \
+    		mutarray_avg[idx]["T", "C"], \
+    		mutarray_avg[idx]["T", "G"], \
+    		mutarray_avg[idx]["G", "A"], \
+    		mutarray_avg[idx]["G", "C"], \
+    		mutarray_avg[idx]["G", "T"]]
+        mutvec_out.append([float(x) for x in mutvec])
+    
+    # print('{:e}'.format(mutarray_avg[0]['C', 'T']))
+    # Save to file
     import pandas as pd
     
-    outfile = './data/MA-sequences-1-toy1.csv'
+    # outfile = './data/MA-sequences-1-toy1.csv'
+    # outfile = './data/MA-sequences-2-toy.csv'
+    outfile = infile[:-5] + 'csv'
     
-    df = pd.read_csv(outfile)
-    
-    # convert to list and numpy array
-    dates = df['Dates'].values.tolist() # in strings
-    mutrates = df.iloc[:,1:13].to_numpy()
-    
-    
+    df = pd.DataFrame({"Dates": dates})
+    df = pd.concat( [df, \
+    	pd.DataFrame(mutvec_out, columns=['A->C', 'A->T', 'A->G', \
+    									'C->A', 'C->T', 'C->G', \
+    									'T->A', 'T->C', 'T->G', \
+    									'G->A', 'G->C', 'G->T'])], axis=1)
+    df = pd.concat( [df, \
+    	pd.DataFrame({"N": [len(idlist) for idlist in ids]})], axis=1)
     print(df)
-    '''
+    df.to_csv(outfile, index=False)
+    
+    print('Run time took {}'.format(time.strftime("%H:%M:%S", time.gmtime(time.time()-start))))
 
-if __name__ == "__main__":
-    main()
+'''
+To read data
+# load file with pandas
+
+import pandas as pd
+
+outfile = './data/MA-sequences-1-toy1.csv'
+
+df = pd.read_csv(outfile)
+
+# convert to list and numpy array
+dates = df['Dates'].values.tolist() # in strings
+mutrates = df.iloc[:,1:13].to_numpy()
+
+
+print(df)
+'''

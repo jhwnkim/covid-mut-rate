@@ -14,4 +14,5 @@
 # python data-import-fasta.py
 #python data-import-muscle.py $infile
 #python data-import-mpi.py $infile
-python data-import-mpi.py $1
+#python data-import-mpi.py $1
+python data-import-mpi.py ./data/batch_input/MA-sequences-3.fasta
