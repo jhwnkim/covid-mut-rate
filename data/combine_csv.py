@@ -17,11 +17,11 @@ else:
     print('Combining:')
     print(csvfiles)
 
-print('\nReading '.format(csvfiles[0]))
+print('\nReading {}'.format(csvfiles[0]))
 allcsv = pd.read_csv(csvfiles[0])
 
 for csvfile in csvfiles[1:]:
-    print('Reading '.format(csvfile))
+    print('Reading {}'.format(csvfile))
     allcsv = pd.concat([allcsv, pd.read_csv(csvfile)])
 
 print('Sorting')
