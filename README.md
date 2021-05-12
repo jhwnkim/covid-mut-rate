@@ -62,5 +62,5 @@ Fasta definition line: Accession, Genbank Title, Geo Location, Collection Date
 
 # Command to run multiple process on supercloud
 ```bash
-LLMapReduce --mapper mapper.sh --input ./data/batch_input --output ./data/output --apptype=mimo --np=[2,5,1]
+LLMapReduce --mapper mapper.sh --input ./data/batch_input --output ./data/output --apptype=mimo --np=[2,5,1] --keep=true
 ```
