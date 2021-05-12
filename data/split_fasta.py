@@ -12,6 +12,10 @@ if len(sys.argv)> 2:
 else:
     size = 250
 
+# excludes = []
+# if len(sys.argv)> 3:
+# 	exclude = sys.argv[]
+
 records = list( SeqIO.parse(infile, "fasta") )
 
 for i in range(0, len(records), size):
