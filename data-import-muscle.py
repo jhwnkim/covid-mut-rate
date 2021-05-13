@@ -30,9 +30,12 @@ from Bio.Align.substitution_matrices import Array
 from Bio.Align.Applications import MuscleCommandline
 
 import subprocess
-muscle_bin = r"/home/gridsan/jhwnkim/git-repo/tools/muscle3.8.31/src/muscle"
-muscle_in = r"/home/gridsan/jhwnkim/tmp/muscle_in.fasta"
-muscle_out= r"/home/gridsan/jhwnkim/tmp/muscle_out.fasta"
+# muscle_bin = r"/home/gridsan/jhwnkim/git-repo/tools/muscle3.8.31/src/muscle"
+# muscle_in = r"/home/gridsan/jhwnkim/tmp/muscle_in.fasta"
+# muscle_out= r"/home/gridsan/jhwnkim/tmp/muscle_out.fasta"
+muscle_bin = "./muscle3.8.31_i86win32.exe"
+muscle_in = "./tmp/muscle_in.fasta"
+muscle_out= "./tmp/muscle_out.fasta"
 
 def mutation_array(seq1, seq2): # pass as SeqRecord
     SeqIO.write([seq1, seq2], muscle_in, "fasta")
@@ -61,7 +64,7 @@ def mutation_array(seq1, seq2): # pass as SeqRecord
 
 # Read downloaded sequence file from NCBI GenBank Virus site
 
-infile = "./data/MA-sequences-2-toy.fasta"
+infile = "./data/old/MA-sequences-2-toy.fasta"
 records = list( SeqIO.parse(infile, "fasta") )
 
 metadata = []
